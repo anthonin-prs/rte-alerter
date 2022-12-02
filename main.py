@@ -15,6 +15,9 @@ today = datetime.date.today()
 has_red = False
 has_orange = False
 
+# sandbox = False
+sandbox = True
+
 hvalue_corresp = {1:{"color":"Vert", "message":"Pas d’alerte"},\
     2:{"color":"Orange", "message":"Le système électrique se trouve dans une situation tendue. Les éco-gestes citoyens sont les bienvenus."},\
     3:{"color":"Rouge", "message":"Le système électrique se trouve dans une situation très tendue. Si nous ne baissons pas notre consommation d'électricité, des coupures ciblées sont inévitables. Adoptons tous les éco-gestes."}\
@@ -73,8 +76,6 @@ mailport = parser.get("MAIL", "port")
 email_receivers = parser.get("MAIL", "receivers").split(", ")
 emergency_email_receivers = parser.get("MAIL", "emergency_receivers").split(", ")
 
-
-
 credentials = rte_client_id+":"+rte_client_secret
 credentials_bytes = credentials.encode("ascii")
 base64_bytes = base64.b64encode(credentials_bytes)
@@ -88,7 +89,10 @@ rte_api_token = token_response["access_token"]
 
 
 request_headers = {'Authorization' : 'Bearer '+rte_api_token}
-ecowatt_request = requests.get(rte_endpoint+"/open_api/ecowatt/v4/signals", headers=request_headers)
+if sandbox:
+    ecowatt_request = requests.get(rte_endpoint+"/open_api/ecowatt/v4/sandbox/signals", headers=request_headers)
+else:
+    ecowatt_request = requests.get(rte_endpoint+"/open_api/ecowatt/v4/signals", headers=request_headers)
 ecowatt_data = ecowatt_request.json()
 
 
@@ -125,7 +129,7 @@ def clean_day_html(date, data):
             last = hour['hvalue']
             clean_text +=  "<li>"+str(initial)+"-"+str(hour['pas'])+"h : <p class=' status "+hvalue_corresp[hour['hvalue']]['color'].lower()+"'>"+str(hvalue_corresp[hour['hvalue']]['color'])+"</p></li>\n"
             initial = hour['pas']
-    clean_text += "</ul>"
+    clean_text += "</ul><hr>"
     return clean_text
 
 
@@ -193,13 +197,13 @@ msg['From'] = mailusername
 msg['To'] = ",".join(email_receivers)
 msg['Subject'] = email_subject
 
-
 msg.attach(MIMEText(mailcontent, 'html'))
 
-mailcontent = msg.as_string()
+mail_content = msg.as_string()
 
 server = smtplib.SMTP(mailserver, mailport)
 server.starttls()
 server.login(mailusername, mailpassword)
-server.sendmail(mailusername, email_receivers, mailcontent)
+
+server.sendmail(mailusername, email_receivers, mail_content)
 server.quit()
