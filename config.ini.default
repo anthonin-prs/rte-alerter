@@ -1,0 +1,13 @@
+[RTE_API]
+endpoint = https://digital.iservices.rte-france.com
+client_id = 
+client_secret = 
+
+[MAIL]
+username = mail@domain.com
+password = pass
+server = smtp.domain.com
+port = 587
+#Receivers splited by ", "
+receivers = mail1@domain.com, mail2@domain.com
+emergency_receivers = mail3@domain.com, mail4@domain.com
