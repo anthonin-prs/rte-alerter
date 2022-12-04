@@ -23,6 +23,12 @@ hvalue_corresp = {1:{"color":"Vert", "message":"Pas d’alerte"},\
     3:{"color":"Rouge", "message":"Le système électrique se trouve dans une situation très tendue. Si nous ne baissons pas notre consommation d'électricité, des coupures ciblées sont inévitables. Adoptons tous les éco-gestes."}\
 }
 
+color_code = {
+    "vert": "#79C24D",
+    "orange": "#F7D668",
+    "rouge": "#FA4536"
+}
+
 
 # Log text with [DATE - TIME] format, write it and display it if 'display = True'
 def log(text, display=True, dateprint=False):
@@ -116,9 +122,9 @@ def clean_day(date, data):
 
 def clean_day_html(date, data):
     clean_text = "\n\n"
-    clean_text += "<h1>"+date+": "
-    clean_text += "<p class='status "+hvalue_corresp[data['overage']]['color'].lower()+"'>"+hvalue_corresp[data['overage']]['color']+" - "+data['message']+"</p></h1>\n"
-    clean_text += "<p class='legend'>"+hvalue_corresp[data['overage']]['message']+"</p>\n"
+    clean_text += "<h1 style:'display:inline;'>"+date+": "
+    clean_text += "<span style='color: "+color_code[hvalue_corresp[data['overage']]['color'].lower()]+";display: inline;'>"+hvalue_corresp[data['overage']]['color']+" - "+data['message']+"</span></h1>\n"
+    clean_text += "<p style='font-style: italic;'>"+hvalue_corresp[data['overage']]['message']+"</p>\n"
 
     clean_text += "<h3>Détail Horaire:</h3>\n"
     initial = 0
@@ -127,7 +133,7 @@ def clean_day_html(date, data):
     for hour in data['values']:
         if hour['hvalue'] != last or hour['pas'] == 23:
             last = hour['hvalue']
-            clean_text +=  "<li>"+str(initial)+"-"+str(hour['pas'])+"h : <p class=' status "+hvalue_corresp[hour['hvalue']]['color'].lower()+"'>"+str(hvalue_corresp[hour['hvalue']]['color'])+"</p></li>\n"
+            clean_text +=  "<li>"+str(initial)+"-"+str(hour['pas'])+"h : <span style='color: "+color_code[hvalue_corresp[data['overage']]['color'].lower()]+";display: inline-block;'>"+str(hvalue_corresp[hour['hvalue']]['color'])+"</span></li>\n"
             initial = hour['pas']
     clean_text += "</ul><hr>"
     return clean_text
@@ -135,32 +141,7 @@ def clean_day_html(date, data):
 
 cleaned_data = {}
 clean_text = ""
-mailcontent = "<style>\n \
-    .vert{\
-        color: #79C24D;\
-    }\
-    .orange{\
-        color: #F7D668;\
-    }\
-    .rouge{\
-        color: #FA4536;\
-    }\
-    .status{\
-        display: inline;\
-    }\
-    h1{\
-        font-size:1.6em;\
-    }\
-    h2{\
-        font-size:1.3em;\
-    }\
-    h3{\
-        font-size:1.1em;\
-    }\
-    .legend{\
-        font-style: italic;\
-    }\
-    </style>\n"
+mailcontent = ""
 
 
 for day in ecowatt_data['signals']:
