@@ -15,8 +15,8 @@ today = datetime.date.today()
 has_red = False
 has_orange = False
 
-# sandbox = False
-sandbox = True
+sandbox = False
+# sandbox = True
 
 hvalue_corresp = {1:{"color":"Vert", "message":"Pas d’alerte"},\
     2:{"color":"Orange", "message":"Le système électrique se trouve dans une situation tendue. Les éco-gestes citoyens sont les bienvenus."},\
@@ -133,7 +133,7 @@ def clean_day_html(date, data):
     for hour in data['values']:
         if hour['hvalue'] != last or hour['pas'] == 23:
             last = hour['hvalue']
-            clean_text +=  "<li>"+str(initial)+"-"+str(hour['pas'])+"h : <span style='color: "+color_code[hvalue_corresp[data['overage']]['color'].lower()]+";display: inline-block;'>"+str(hvalue_corresp[hour['hvalue']]['color'])+"</span></li>\n"
+            clean_text +=  "<li>"+str(initial)+"-"+str(hour['pas'])+"h : <span style='color: "+color_code[hvalue_corresp[hour['hvalue']]['color'].lower()]+";display: inline-block;'>"+str(hvalue_corresp[hour['hvalue']]['color'])+"</span></li>\n"
             initial = hour['pas']
     clean_text += "</ul><hr>"
     return clean_text
